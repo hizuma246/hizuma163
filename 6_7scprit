@@ -23,7 +23,7 @@ UICorner.Parent = ImageButton
 
 -- [[ 2. KHỞI TẠO CỬA SỔ MENU ]] --
 local Window = Fluent:CreateWindow({
-    Title = "Tổng Hợp Scprit",
+    Title = "Tổng Hợp Script",
     SubTitle = "6_7 Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
@@ -36,29 +36,22 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
-local Tabs = {}
+local Tabs = {
+    Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" }),
+    Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
+}
 
 -- [[ 3. TAB THÔNG TIN ]] --
-Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
-
 Tabs.Info:AddButton({
     Title = "Discord Community",
     Description = "Tham gia để nhận thông báo mới",
     Callback = function()
         if hasClickedDiscord then
-            Fluent:Notify({
-                Title = "Thông báo",
-                Content = "Bạn đã lấy link discord rồi!",
-                Duration = 5
-            })
+            Fluent:Notify({ Title = "Thông báo", Content = "Bạn đã lấy link discord rồi!", Duration = 5 })
         else
             hasClickedDiscord = true
             setclipboard("https://discord.gg/DBFVrAzbB")
-            Fluent:Notify({
-                Title = "Thành công",
-                Content = "Bạn đã lấy link discord",
-                Duration = 5
-            })
+            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link discord vào bộ nhớ tạm", Duration = 5 })
         end
     end
 })
@@ -68,86 +61,51 @@ Tabs.Info:AddButton({
     Description = "Mpk Roblox",
     Callback = function() 
         if hasClickedTikTok then
-            Fluent:Notify({
-                Title = "Thông báo",
-                Content = "Bạn đã lấy link tiktok rồi!",
-                Duration = 5
-            })
+            Fluent:Notify({ Title = "Thông báo", Content = "Bạn đã lấy link tiktok rồi!", Duration = 5 })
         else
             hasClickedTikTok = true
             setclipboard("https://www.tiktok.com/@kaiiz_12")
-            Fluent:Notify({
-                Title = "Thành công",
-                Content = "Bạn đã lấy link tiktok",
-                Duration = 5
-            })
+            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link tiktok vào bộ nhớ tạm", Duration = 5 })
         end
     end
 })
 
 -- [[ 4. PHÂN LOẠI GAME ]] --
-
--- >> JUJUTSU SHENANIGANS
 if PlaceID == 10449761463 then
     Tabs.JJS = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
-    
     Tabs.JJS:AddButton({
         Title = "Spotlight Hub",
-        Callback = function()
-            loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))()
-        end
+        Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))() end
     })
-    
     Tabs.JJS:AddButton({
         Title = "Tbo Hub",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/cool5013/TBO/main/TBOscript"))()
-        end
+        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/cool5013/TBO/main/TBOscript"))() end
     })
-
-    Tabs.JJS:AddButton({
-        Title = "Seidou Hub",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditibi/SeidouHub/main/JJS.lua"))()
-        end
-    })
-
--- >> BLOX FRUITS
 elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
     Tabs.BF = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
     Tabs.BF:AddButton({
         Title = "Redz Hub",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))()
-        end
+        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))() end
     })
-
--- >> GAME KHÁC
 else
     Tabs.Other = Window:AddTab({ Title = "Game Khác", Icon = "globe" })
     Tabs.Other:AddButton({
         Title = "Infinite Yield",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        end
+        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT ]] --
-Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
-
--- FIX LỖI CHỈNH MÀU Ở ĐÂY
-local Colorpicker = Tabs.Settings:AddColorpicker("AccentColorPicker", {
+-- [[ 5. TAB CÀI ĐẶT (FIXED) ]] --
+local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
     Title = "Chỉnh màu Menu",
-    Default = Color3.fromRGB(167, 83, 245) -- Màu tím mặc định
+    Default = Color3.fromRGB(167, 83, 245)
 })
 
-Colorpicker:OnChanged(function()
-    -- Cập nhật trực tiếp vào hệ thống màu của Fluent
-    Fluent:SetAccentColor(Colorpicker.Value)
+-- Sửa lỗi đổi màu ở đây
+Colorpicker:OnChanged(function(Value)
+    Fluent.AccentColor = Value
 end)
 
--- Nút Fix Lag
 Tabs.Settings:AddButton({
     Title = "Fix Lag (Siêu Mượt)",
     Description = "Tăng FPS tối đa",
@@ -157,10 +115,10 @@ Tabs.Settings:AddButton({
     end
 })
 
--- Khởi tạo xong
+-- Hoàn tất
 Window:SelectTab(1)
 Fluent:Notify({
     Title = "6_7 Hub",
-    Content = "Đã fix lỗi màu sắc thành công!",
+    Content = "Đã sửa lỗi chỉnh màu thành công!",
     Duration = 5
 })
