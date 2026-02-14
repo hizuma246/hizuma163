@@ -1,135 +1,154 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local PlaceID = game.PlaceId
 
--- Biến kiểm tra trạng thái bấm
-local hasClickedTikTok = false
-local hasClickedDiscord = false
+-- [[ CẤU HÌNH HỆ THỐNG KEY ]] --
+local CORRECT_KEY = "6_7HUB-VIP" 
+local DISCORD_LINK = "https://discord.gg/DBFVrAzbB"
+local KEY_FILE = "6_7Hub_Config.txt"
 
--- [[ 1. CẤU HÌNH NÚT BẤM TRÒN ]] --
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
+-- [[ HÀM HỖ TRỢ ]] --
+local function SaveKey(key)
+    if writefile then writefile(KEY_FILE, key) end
+end
 
-ScreenGui.Parent = game.CoreGui
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Position = UDim2.new(0.1, 0, 0.15, 0)
-ImageButton.Draggable = true
-ImageButton.Active = true
-ImageButton.Image = "rbxassetid://83932975706860" 
-UICorner.CornerRadius = UDim.new(1, 0)
-UICorner.Parent = ImageButton
+local function GetSavedKey()
+    if isfile and isfile(KEY_FILE) then return readfile(KEY_FILE) end
+    return ""
+end
 
--- [[ 2. KHỞI TẠO CỬA SỔ MENU ]] --
-local Window = Fluent:CreateWindow({
-    Title = "Tổng Hợp Script",
-    SubTitle = "6_7 Hub",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(500, 320),
-    Acrylic = true,
-    Theme = "Amethyst",
-    MinimizeKey = Enum.KeyCode.End
-})
-
-ImageButton.MouseButton1Click:Connect(function()
-    Window:Minimize()
-end)
-
-local Tabs = {}
-
--- [[ 3. TAB THÔNG TIN ]] --
-Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
-
-Tabs.Info:AddButton({
-    Title = "Discord Community",
-    Description = "Tham gia để nhận thông báo mới",
-    Callback = function()
-        if hasClickedDiscord then
-            Fluent:Notify({ Title = "Thông báo", Content = "Bạn đã lấy link discord rồi!", Duration = 5 })
-        else
-            hasClickedDiscord = true
-            setclipboard("https://discord.gg/DBFVrAzbB")
-            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link discord!", Duration = 5 })
-        end
-    end
-})
-
-Tabs.Info:AddButton({
-    Title = "Kênh Tiktok",
-    Description = "Mpk Roblox",
-    Callback = function() 
-        if hasClickedTikTok then
-            Fluent:Notify({ Title = "Thông báo", Content = "Bạn đã lấy link tiktok rồi!", Duration = 5 })
-        else
-            hasClickedTikTok = true
-            setclipboard("https://www.tiktok.com/@kaiiz_12")
-            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link tiktok!", Duration = 5 })
-        end
-    end
-})
-
--- [[ 4. PHÂN LOẠI GAME ]] --
-if PlaceID == 10449761463 then
-    -- Jujutsu Shenanigans
-    Tabs.Game = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
-    Tabs.Game:AddButton({
-        Title = "Spotlight Hub",
-        Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))() end
-    })
-    Tabs.Game:AddButton({
-        Title = "Tbo Hub",
-        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/cool5013/TBO/main/TBOscript"))() end
-    })
-elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
-    -- Blox Fruits
-    Tabs.Game = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
-    Tabs.Game:AddButton({
-        Title = "Redz Hub",
-        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))() end
-    })
-else
-    -- Game Khác & Ghi chú (Thêm ở đây)
-    Tabs.Other = Window:AddTab({ Title = "Game Khác", Icon = "globe" })
+-- [[ HÀM CHỨA MENU CHÍNH ]] --
+function LoadMainHub()
+    local Player = game:GetService("Players").LocalPlayer
+    local PlaceID = game.PlaceId
     
-    Tabs.Other:AddParagraph({
-        Title = "Thông báo",
-        Content = "Script này không hỗ trợ hoặc chưa có!"
+    -- Khởi tạo Window chính
+    local Window = Fluent:CreateWindow({
+        Title = "6_7 Hub | Premium Edition",
+        SubTitle = "by 6_7 Team",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(580, 420),
+        Acrylic = true,
+        Theme = "Amethyst",
+        MinimizeKey = Enum.KeyCode.End
     })
 
-    Tabs.Other:AddButton({
-        Title = "Infinite Yield (Lệnh Admin)",
-        Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end
+    -- FIX LỖI: Kiểm tra nếu Window khởi tạo thành công mới tạo Tab
+    if not Window then
+        warn("Fluent: Không thể tạo Window!")
+        return
+    end
+
+    local Tabs = {
+        Main = Window:AddTab({ Title = "Trang Chủ", Icon = "home" }),
+        Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
+    }
+
+    -- PHÂN LOẠI GAME
+    if PlaceID == 10449761463 then
+        Tabs.Game = Window:AddTab({ Title = "JJS", Icon = "zap" })
+        Tabs.Game:AddButton({Title = "Spotlight Hub", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))() end})
+    elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
+        Tabs.Game = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
+        Tabs.Game:AddButton({Title = "Redz Hub", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))() end})
+    end
+
+    -- TAB CÀI ĐẶT
+    Tabs.Settings:AddButton({
+        Title = "Rejoin Server",
+        Callback = function() game:GetService("TeleportService"):Teleport(game.PlaceId, Player) end
+    })
+
+    -- [[ FIX LỖI NÚT TRÒN TOGGLE ]] --
+    -- Xóa nút cũ nếu có để tránh trùng lặp
+    if game.CoreGui:FindFirstChild("67Hub_Toggle") then
+        game.CoreGui["67Hub_Toggle"]:Destroy()
+    end
+
+    local ScreenGui = Instance.new("ScreenGui")
+    local ImageButton = Instance.new("ImageButton")
+    local UICorner = Instance.new("UICorner")
+
+    ScreenGui.Name = "67Hub_Toggle"
+    ScreenGui.Parent = game.CoreGui
+    
+    ImageButton.Parent = ScreenGui
+    ImageButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    ImageButton.Size = UDim2.new(0, 50, 0, 50)
+    ImageButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+    ImageButton.Draggable = true
+    ImageButton.Active = true
+    ImageButton.Image = "rbxassetid://83932975706860"
+    
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = ImageButton
+
+    -- Sửa logic click: Fluent sử dụng Minimize() để ẩn/hiện
+    ImageButton.MouseButton1Click:Connect(function()
+        Window:Minimize() 
+    end)
+
+    Window:SelectTab(1)
+    
+    Fluent:Notify({
+        Title = "6_7 Hub",
+        Content = "Menu đã sẵn sàng!",
+        Duration = 3
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT (NẰM DƯỚI CÙNG) ]] --
-Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
-
--- Nút Fix Lag
-Tabs.Settings:AddButton({
-    Title = "Fix Lag (Siêu Mượt)",
-    Description = "Giảm đồ họa, tăng FPS",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
-        Fluent:Notify({Title = "Hệ thống", Content = "Đã kích hoạt Fix Lag!", Duration = 3})
+-- [[ HỆ THỐNG KIỂM TRA KEY ]] --
+local function StartKeySystem()
+    local Saved = GetSavedKey()
+    
+    -- Nếu đã có key đúng, vào thẳng Hub
+    if Saved == CORRECT_KEY then
+        LoadMainHub()
+        return
     end
-})
 
--- Chỉnh màu
-local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
-    Title = "Chỉnh màu Menu",
-    Default = Color3.fromRGB(167, 83, 245)
-})
+    -- Nếu chưa có, hiện bảng nhập Key
+    local KeyWindow = Fluent:CreateWindow({
+        Title = "6_7 Hub | Authentication",
+        SubTitle = "Hệ Thống Xác Thực",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(450, 300),
+        Acrylic = true,
+        Theme = "Amethyst",
+        MinimizeKey = Enum.KeyCode.End
+    })
 
-Colorpicker:OnChanged(function(Value)
-    Fluent.AccentColor = Value
-end)
+    local KeyTab = KeyWindow:AddTab({ Title = "Xác Thực", Icon = "key" })
+    
+    local KeyInput = KeyTab:AddInput("Input", {
+        Title = "Nhập mã Key",
+        Default = "",
+        Placeholder = "Dán key tại đây...",
+        Callback = function() end
+    })
 
--- Kết thúc
-Window:SelectTab(1)
-Fluent:Notify({
-    Title = "6_7 Hub",
-    Content = "Khởi động thành công! Đã thêm ghi chú hỗ trợ game.",
-    Duration = 5
-})
+    KeyTab:AddButton({
+        Title = "Xác Nhận (Login)",
+        Callback = function()
+            if KeyInput.Value == CORRECT_KEY then
+                SaveKey(KeyInput.Value)
+                Fluent:Notify({Title = "Thành Công!", Content = "Đang mở Menu...", Duration = 3})
+                task.wait(0.5)
+                KeyWindow:Destroy()
+                task.wait(0.2) -- Đợi một chút để UI cũ xóa sạch
+                LoadMainHub()
+            else
+                Fluent:Notify({Title = "Lỗi", Content = "Mã Key không chính xác!", Duration = 5})
+            end
+        end
+    })
+
+    KeyTab:AddButton({
+        Title = "Lấy Key",
+        Callback = function()
+            setclipboard(DISCORD_LINK)
+            Fluent:Notify({Title = "Thông báo", Content = "Đã copy link Discord!", Duration = 5})
+        end
+    })
+end
+
+-- Chạy hệ thống
+StartKeySystem()
