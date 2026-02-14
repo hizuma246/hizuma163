@@ -28,7 +28,7 @@ local Window = Fluent:CreateWindow({
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
     Acrylic = true,
-    Theme = "Amethyst",
+    Theme = "Amethyst", -- Giao diện mặc định
     MinimizeKey = Enum.KeyCode.End
 })
 
@@ -36,12 +36,12 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
-local Tabs = {
-    Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" }),
-    Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
-}
+-- Tạo bảng chứa các Tab
+local Tabs = {}
 
--- [[ 3. TAB THÔNG TIN ]] --
+-- [[ 3. TAB THÔNG TIN (ĐỨNG ĐẦU) ]] --
+Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
+
 Tabs.Info:AddButton({
     Title = "Discord Community",
     Description = "Tham gia để nhận thông báo mới",
@@ -51,7 +51,7 @@ Tabs.Info:AddButton({
         else
             hasClickedDiscord = true
             setclipboard("https://discord.gg/DBFVrAzbB")
-            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link discord vào bộ nhớ tạm", Duration = 5 })
+            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link discord!", Duration = 5 })
         end
     end
 })
@@ -65,12 +65,12 @@ Tabs.Info:AddButton({
         else
             hasClickedTikTok = true
             setclipboard("https://www.tiktok.com/@kaiiz_12")
-            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link tiktok vào bộ nhớ tạm", Duration = 5 })
+            Fluent:Notify({ Title = "Thành công", Content = "Đã copy link tiktok!", Duration = 5 })
         end
     end
 })
 
--- [[ 4. PHÂN LOẠI GAME ]] --
+-- [[ 4. TAB GAME (SẼ HIỆN Ở GIỮA) ]] --
 if PlaceID == 10449761463 then
     Tabs.JJS = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
     Tabs.JJS:AddButton({
@@ -95,15 +95,19 @@ else
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT (FIXED) ]] --
+-- [[ 5. TAB CÀI ĐẶT (ĐÃ ĐƯA XUỐNG DƯỚI CÙNG VÀ FIX MÀU) ]] --
+Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
+
 local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
     Title = "Chỉnh màu Menu",
     Default = Color3.fromRGB(167, 83, 245)
 })
 
--- Sửa lỗi đổi màu ở đây
+-- Hàm đổi màu đã được tối ưu để cập nhật ngay lập tức
 Colorpicker:OnChanged(function(Value)
     Fluent.AccentColor = Value
+    -- Buộc menu cập nhật lại màu sắc (Refresh Theme)
+    Window:SetTheme(Fluent.Theme) 
 end)
 
 Tabs.Settings:AddButton({
@@ -115,10 +119,10 @@ Tabs.Settings:AddButton({
     end
 })
 
--- Hoàn tất
+-- Kết thúc khởi tạo
 Window:SelectTab(1)
 Fluent:Notify({
     Title = "6_7 Hub",
-    Content = "Đã sửa lỗi chỉnh màu thành công!",
+    Content = "Đã sắp xếp lại Menu và sửa lỗi màu sắc!",
     Duration = 5
 })
