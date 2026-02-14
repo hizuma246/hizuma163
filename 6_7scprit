@@ -28,7 +28,7 @@ local Window = Fluent:CreateWindow({
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
     Acrylic = true,
-    Theme = "Amethyst", -- Giao diện mặc định
+    Theme = "Amethyst",
     MinimizeKey = Enum.KeyCode.End
 })
 
@@ -36,10 +36,9 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
--- Tạo bảng chứa các Tab
 local Tabs = {}
 
--- [[ 3. TAB THÔNG TIN (ĐỨNG ĐẦU) ]] --
+-- [[ 3. TAB THÔNG TIN ]] --
 Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
 
 Tabs.Info:AddButton({
@@ -70,59 +69,67 @@ Tabs.Info:AddButton({
     end
 })
 
--- [[ 4. TAB GAME (SẼ HIỆN Ở GIỮA) ]] --
+-- [[ 4. PHÂN LOẠI GAME ]] --
 if PlaceID == 10449761463 then
-    Tabs.JJS = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
-    Tabs.JJS:AddButton({
+    -- Jujutsu Shenanigans
+    Tabs.Game = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
+    Tabs.Game:AddButton({
         Title = "Spotlight Hub",
         Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))() end
     })
-    Tabs.JJS:AddButton({
+    Tabs.Game:AddButton({
         Title = "Tbo Hub",
         Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/cool5013/TBO/main/TBOscript"))() end
     })
 elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
-    Tabs.BF = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
-    Tabs.BF:AddButton({
+    -- Blox Fruits
+    Tabs.Game = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
+    Tabs.Game:AddButton({
         Title = "Redz Hub",
         Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))() end
     })
 else
+    -- Game Khác & Ghi chú (Thêm ở đây)
     Tabs.Other = Window:AddTab({ Title = "Game Khác", Icon = "globe" })
+    
+    Tabs.Other:AddParagraph({
+        Title = "Thông báo",
+        Content = "Script này không hỗ trợ hoặc chưa có!"
+    })
+
     Tabs.Other:AddButton({
-        Title = "Infinite Yield",
+        Title = "Infinite Yield (Lệnh Admin)",
         Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT (ĐÃ ĐƯA XUỐNG DƯỚI CÙNG VÀ FIX MÀU) ]] --
+-- [[ 5. TAB CÀI ĐẶT (NẰM DƯỚI CÙNG) ]] --
 Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
 
+-- Nút Fix Lag
+Tabs.Settings:AddButton({
+    Title = "Fix Lag (Siêu Mượt)",
+    Description = "Giảm đồ họa, tăng FPS",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
+        Fluent:Notify({Title = "Hệ thống", Content = "Đã kích hoạt Fix Lag!", Duration = 3})
+    end
+})
+
+-- Chỉnh màu
 local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
     Title = "Chỉnh màu Menu",
     Default = Color3.fromRGB(167, 83, 245)
 })
 
--- Hàm đổi màu đã được tối ưu để cập nhật ngay lập tức
 Colorpicker:OnChanged(function(Value)
     Fluent.AccentColor = Value
-    -- Buộc menu cập nhật lại màu sắc (Refresh Theme)
-    Window:SetTheme(Fluent.Theme) 
 end)
 
-Tabs.Settings:AddButton({
-    Title = "Fix Lag (Siêu Mượt)",
-    Description = "Tăng FPS tối đa",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
-        Fluent:Notify({Title = "Fix Lag", Content = "Đã kích hoạt mượt!", Duration = 3})
-    end
-})
-
--- Kết thúc khởi tạo
+-- Kết thúc
 Window:SelectTab(1)
 Fluent:Notify({
     Title = "6_7 Hub",
-    Content = "Đã sắp xếp lại Menu và sửa lỗi màu sắc!",
+    Content = "Khởi động thành công! Đã thêm ghi chú hỗ trợ game.",
     Duration = 5
 })
