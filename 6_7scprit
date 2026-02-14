@@ -1,0 +1,163 @@
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local PlaceID = game.PlaceId
+
+-- Biến kiểm tra trạng thái bấm (Để chặn bấm nhiều lần)
+local hasClickedTikTok = false
+local hasClickedDiscord = false
+
+-- [[ 1. CẤU HÌNH NÚT BẤM TRÒN ]] --
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Parent = game.CoreGui
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
+ImageButton.Position = UDim2.new(0.1, 0, 0.15, 0)
+ImageButton.Draggable = true
+ImageButton.Active = true
+ImageButton.Image = "http://www.roblox.com/asset/?id=83932975706860" 
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = ImageButton
+
+-- [[ 2. KHỞI TẠO CỬA SỔ MENU ]] --
+local Window = Fluent:CreateWindow({
+    Title = "TBoy Roblox Tổng Hợp",
+    SubTitle = "Hub Đa Năng",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(500, 320),
+    Acrylic = true,
+    Theme = "Amethyst",
+    MinimizeKey = Enum.KeyCode.End
+})
+
+ImageButton.MouseButton1Click:Connect(function()
+    Window:Minimize()
+end)
+
+local Tabs = {}
+
+-- [[ 3. TAB THÔNG TIN (VỊ TRÍ 1) ]] --
+Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
+
+Tabs.Info:AddButton({
+    Title = "Discord Community",
+    Description = "Tham gia để nhận thông báo mới",
+    Callback = function()
+        if hasClickedDiscord then
+            Fluent:Notify({
+                Title = "Thông báo",
+                Content = "Bạn đã lấy link discord rồi!",
+                Duration = 5
+            })
+        else
+            hasClickedDiscord = true
+            setclipboard("https://discord.gg/DBFVrAzbB")
+            Fluent:Notify({
+                Title = "Thành công",
+                Content = "Đã copy link Discord! Nút bấm đã bị khóa.",
+                Duration = 5
+            })
+        end
+    end
+})
+
+Tabs.Info:AddButton({
+    Title = "Kênh Tiktok",
+    Description = "Mpk Roblox",
+    Callback = function() 
+        if hasClickedTikTok then
+            Fluent:Notify({
+                Title = "Thông báo",
+                Content = "Bạn đã lấy link tiktok rồi!",
+                Duration = 5
+            })
+        else
+            hasClickedTikTok = true
+            setclipboard("https://www.tiktok.com/@kaiiz_12")
+            Fluent:Notify({
+                Title = "Thành công",
+                Content = "Đã copy link TikTok! Nút bấm đã bị khóa.",
+                Duration = 5
+            })
+        end
+    end
+})
+
+-- [[ 4. PHÂN LOẠI GAME (VỊ TRÍ GIỮA) ]] --
+
+-- >> JUJUTSU SHENANIGANS
+if PlaceID == 10449761463 then
+    Tabs.JJS = Window:AddTab({ Title = "Jujutsu Shenanigans", Icon = "zap" })
+    
+    Tabs.JJS:AddButton({
+        Title = "Spotlight Hub",
+        Callback = function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script'))()
+        end
+    })
+    
+    Tabs.JJS:AddButton({
+        Title = "Tbo Hub",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/cool5013/TBO/main/TBOscript"))()
+        end
+    })
+
+    Tabs.JJS:AddButton({
+        Title = "Seidou Hub",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditibi/SeidouHub/main/JJS.lua"))()
+        end
+    })
+
+-- >> BLOX FRUITS
+elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
+    Tabs.BF = Window:AddTab({ Title = "Blox Fruits", Icon = "sword" })
+    Tabs.BF:AddButton({
+        Title = "Redz Hub",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))()
+        end
+    })
+
+-- >> KING LEGACY
+elseif PlaceID == 3652625463 or PlaceID == 14455793425 or PlaceID == 16133333345 then
+    Tabs.KL = Window:AddTab({ Title = "King Legacy", Icon = "crown" })
+    Tabs.KL:AddButton({
+        Title = "Banana Hub",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BleuBlooker/BananaHub/main/KingLegacy.lua"))()
+        end
+    })
+
+-- >> GAME KHÁC
+else
+    Tabs.Other = Window:AddTab({ Title = "Game Khác", Icon = "globe" })
+    Tabs.Other:AddButton({
+        Title = "Infinite Yield",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        end
+    })
+end
+
+-- [[ 5. TAB CÀI ĐẶT & FIX LAG (LUÔN Ở CUỐI) ]] --
+Tabs.Settings = Window:AddTab({ Title = "Cài Đặt & Fix Lag", Icon = "settings" })
+
+Tabs.Settings:AddButton({
+    Title = "Fix Lag (Siêu Mượt)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
+        Fluent:Notify({Title = "Fix Lag", Content = "Đã kích hoạt!", Duration = 3})
+    end
+})
+
+-- Khởi tạo mặc định
+Window:SelectTab(1)
+Fluent:Notify({
+    Title = "TBoy Hub",
+    Content = "Đã cập nhật Script JJS và hệ thống khóa link!",
+    Duration = 5
+})
