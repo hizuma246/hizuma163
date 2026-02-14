@@ -23,7 +23,7 @@ UICorner.Parent = ImageButton
 
 -- [[ 2. KHỞI TẠO CỬA SỔ MENU ]] --
 local Window = Fluent:CreateWindow({
-    Title = "Tổng Hợp Scprit Roblox",
+    Title = "Tổng Hợp Scprit",
     SubTitle = "6_7 Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
@@ -38,7 +38,7 @@ end)
 
 local Tabs = {}
 
--- [[ 3. TAB THÔNG TIN (VỊ TRÍ 1) ]] --
+-- [[ 3. TAB THÔNG TIN ]] --
 Tabs.Info = Window:AddTab({ Title = "Thông Tin", Icon = "info" })
 
 Tabs.Info:AddButton({
@@ -56,7 +56,7 @@ Tabs.Info:AddButton({
             setclipboard("https://discord.gg/DBFVrAzbB")
             Fluent:Notify({
                 Title = "Thành công",
-                Content = "Đã lấy link discord thành công!",
+                Content = "Bạn đã lấy link discord",
                 Duration = 5
             })
         end
@@ -78,14 +78,14 @@ Tabs.Info:AddButton({
             setclipboard("https://www.tiktok.com/@kaiiz_12")
             Fluent:Notify({
                 Title = "Thành công",
-                Content = "Đã lấy link tiktok thành công!",
+                Content = "Bạn đã lấy link tiktok",
                 Duration = 5
             })
         end
     end
 })
 
--- [[ 4. PHÂN LOẠI GAME (VỊ TRÍ GIỮA) ]] --
+-- [[ 4. PHÂN LOẠI GAME ]] --
 
 -- >> JUJUTSU SHENANIGANS
 if PlaceID == 10449761463 then
@@ -133,32 +133,32 @@ else
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT & FIX LAG (LUÔN Ở CUỐI) ]] --
+-- [[ 5. TAB CÀI ĐẶT (ĐÃ FIX LỖI ĐỔI MÀU) ]] --
 Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
 
--- THÊM CHỈNH MÀU MENU TẠI ĐÂY
 local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
-    Title = "Màu chủ đạo Menu",
-    Default = Color3.fromRGB(167, 83, 245) -- Màu mặc định (Tím)
+    Title = "Chỉnh màu Menu",
+    Default = Color3.fromRGB(167, 83, 245) -- Màu tím mặc định
 })
 
+-- SỬA LỖI TẠI ĐÂY: Dùng SetAccentColor để cập nhật ngay lập tức
 Colorpicker:OnChanged(function()
-    Window.AccentColor = Colorpicker.Value
+    Fluent:SetAccentColor(Colorpicker.Value)
 end)
 
 Tabs.Settings:AddButton({
     Title = "Fix Lag (Siêu Mượt)",
-    Description = "Xóa texture để tăng FPS",
+    Description = "Tăng FPS tối đa",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
-        Fluent:Notify({Title = "Fix Lag", Content = "Đã kích hoạt!", Duration = 3})
+        Fluent:Notify({Title = "Fix Lag", Content = "Đã kích hoạt mượt!", Duration = 3})
     end
 })
 
--- Khởi tạo mặc định
+-- Khởi tạo xong
 Window:SelectTab(1)
 Fluent:Notify({
     Title = "6_7 Hub",
-    Content = "Menu đã sẵn sàng! Bạn có thể chỉnh màu trong tab Cài đặt.",
+    Content = "Đã fix lỗi chỉnh màu. Chúc bạn chơi vui vẻ!",
     Duration = 5
 })
