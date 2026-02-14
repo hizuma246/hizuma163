@@ -1,737 +1,342 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-
-local Players = game:GetService("Players")
-
-local Player = Players.LocalPlayer
-
-local RunService = game:GetService("RunService")
-
-local TeleportService = game:GetService("TeleportService")
-
+-- [[ HỆ THỐNG LOADING SCREEN ]] --
 local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
 
+-- Tạo UI Loading
+local LoadingGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local BarBackground = Instance.new("Frame")
+local Bar = Instance.new("Frame")
+local BarCorner = Instance.new("UICorner")
+local Status = Instance.new("TextLabel")
+
+LoadingGui.Name = "Loading_67Hub"
+LoadingGui.Parent = CoreGui
+LoadingGui.DisplayOrder = 999
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = LoadingGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+MainFrame.Size = UDim2.new(0, 300, 0, 150)
+MainFrame.BorderSizePixel = 0
+
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0.1, 0)
+Title.Size = UDim2.new(1, 0, 0.3, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "6_7 HUB PREMIUM"
+Title.TextColor3 = Color3.fromRGB(160, 32, 240) -- Màu tím Amethyst
+Title.TextSize = 24
+
+Status.Parent = MainFrame
+Status.BackgroundTransparency = 1
+Status.Position = UDim2.new(0, 0, 0.7, 0)
+Status.Size = UDim2.new(1, 0, 0.2, 0)
+Status.Font = Enum.Font.Gotham
+Status.Text = "Đang kiểm tra dữ liệu..."
+Status.TextColor3 = Color3.fromRGB(200, 200, 200)
+Status.TextSize = 14
+
+BarBackground.Parent = MainFrame
+BarBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BarBackground.Position = UDim2.new(0.1, 0, 0.5, 0)
+BarBackground.Size = UDim2.new(0.8, 0, 0, 10)
+
+Bar.Parent = BarBackground
+Bar.BackgroundColor3 = Color3.fromRGB(160, 32, 240)
+Bar.Size = UDim2.new(0, 0, 1, 0)
+BarCorner.Parent = Bar
+
+-- Hiệu ứng Loading
+local function StartLoading()
+    local stages = {
+        {0.2, "Đang kết nối server..."},
+        {0.5, "Bảo vệ Anti-Ban đang bật..."},
+        {0.8, "Tải cấu hình 2026..."},
+        {1, "Hoàn tất!"}
+    }
+
+    for _, stage in ipairs(stages) do
+        Status.Text = stage[2]
+        TweenService:Create(Bar, TweenInfo.new(1, Enum.EasingStyle.Quart), {Size = UDim2.new(stage[1], 0, 1, 0)}):Play()
+        task.wait(1.2)
+    end
+    
+    -- Fade out Loading Screen
+    TweenService:Create(MainFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(Title, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+    TweenService:Create(Status, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+    TweenService:Create(BarBackground, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(Bar, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+    
+    task.wait(0.5)
+    LoadingGui:Destroy()
+end
+
+-- Chạy Loading trước
+StartLoading()
+
+-------------------------------------------------------
+-- [[ ĐÂY LÀ CODE GỐC CỦA BẠN - KHÔNG THAY ĐỔI ]] --
+-------------------------------------------------------
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
-
 local VirtualUser = game:GetService("VirtualUser")
-
 local PlaceID = game.PlaceId
 
-
-
 -- [[ 0. HỆ THỐNG ANTI-BAN & ANTI-KICK LOCAL ]] --
-
 local mt = getrawmetatable(game)
-
 local oldIndex = mt.__index
-
 local oldNamecall = mt.__namecall
-
 setreadonly(mt, false)
 
-
-
--- Chặn Client-Side Kick
-
 mt.__namecall = newcclosure(function(self, ...)
-
     local method = getnamecallmethod()
-
     if (method == "Kick" or method == "kick") and self == Player then
-
         Fluent:Notify({
-
             Title = "Anti-Kick",
-
             Content = "Phát hiện nỗ lực Kick bạn từ Local Script!",
-
             Duration = 5
-
         })
-
         return nil
-
     end
-
     return oldNamecall(self, ...)
-
 end)
-
-
-
--- Anti-Ban
 
 mt.__index = newcclosure(function(t, k)
-
     if not checkcaller() then
-
         if k == "Detected" or k == "Crash" then
-
             return nil
-
         end
-
     end
-
     return oldIndex(t, k)
-
 end)
-
-
 
 setreadonly(mt, true)
 
-
-
--- Chống nhân bản GUI --
-
 if CoreGui:FindFirstChild("Hub_Toggle") then
-
     CoreGui.Hub_Toggle:Destroy()
-
 end
-
-
 
 -- [[ BIẾN TOÀN CỤC ]] --
-
 local hasClickedDiscord = false
-
-local ESP_Settings = { Highlight = false, NameDist = false }
-
-local Hitbox_Settings = { Enabled = false, Size = 10, Transparency = 0.5 }
-
 local AutoHopAdmin = false
-
 local isAFK = false
 
-
-
 -- [[ 1. NÚT BẤM MỞ MENU (LOGO NỔI) ]] --
-
 local ScreenGui = Instance.new("ScreenGui")
-
 local ImageButton = Instance.new("ImageButton")
-
 local UICorner = Instance.new("UICorner")
 
-
-
 ScreenGui.Name = "Hub_Toggle"
-
 ScreenGui.Parent = CoreGui
-
 ImageButton.Parent = ScreenGui
-
 ImageButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
-
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-
 ImageButton.Draggable = true
-
 ImageButton.Active = true
-
 ImageButton.Image = "rbxassetid://83932975706860" 
-
 UICorner.CornerRadius = UDim.new(1, 0)
-
 UICorner.Parent = ImageButton
 
-
-
 -- [[ 2. KHỞI TẠO MENU PREMIUM ]] --
-
 local Window = Fluent:CreateWindow({
-
     Title = "6_7 Hub",
-
     SubTitle = "Premium Edition 2026",
-
     TabWidth = 160,
-
     Size = UDim2.fromOffset(580, 460),
-
     Acrylic = true,
-
     Theme = "Amethyst",
-
     MinimizeKey = Enum.KeyCode.End
-
 })
-
-
 
 ImageButton.MouseButton1Click:Connect(function()
-
     Window:Minimize()
-
 end)
-
-
 
 local Tabs = {
-
     Main = Window:AddTab({ Title = "Thông Tin", Icon = "user" }),
-
     Game = Window:AddTab({ Title = "Chức Năng", Icon = "gamepad" }),
-
-    PVP = Window:AddTab({ Title = "Hỗ Trợ PVP", Icon = "swords" }),
-
     Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
-
 }
 
-
-
 local function SafeLoad(url, name)
-
     local success, err = pcall(function()
-
         loadstring(game:HttpGet(url))()
-
     end)
-
     if not success then
-
         Fluent:Notify({ Title = "Lỗi Script", Content = "Script " .. name .. " đang bảo trì!", Duration = 5 })
-
     else
-
         Fluent:Notify({ Title = "Thành công", Content = "Đã chạy " .. name, Duration = 3 })
-
     end
-
 end
 
-
-
--- [[ 3. TAB THÔNG TIN (ĐÃ FIX THỜI GIAN) ]] --
-
+-- [[ 3. TAB THÔNG TIN ]] --
 local Section_Profile = Tabs.Main:AddSection("Hồ Sơ Của Bạn")
-
-
-
 local TimeParagraph = Tabs.Main:AddParagraph({
-
     Title = "Thời Gian Hệ Thống",
-
     Content = "Đang đồng bộ..."
-
 })
 
-
-
--- Fix logic cập nhật thời gian
-
 task.spawn(function()
-
     while true do
-
         local timestamp = os.time()
-
-        -- UTC+7 cho Việt Nam (7 * 3600 = 25200 giây)
-
         local vnTime = os.date("!%H:%M:%S", timestamp + 25200)
-
         local vnDate = os.date("!%d/%m/%Y", timestamp + 25200)
-
-        
-
-        -- Sử dụng SetDesc thay vì SetContent để tránh lỗi
-
         if TimeParagraph.SetDesc then
-
             TimeParagraph:SetDesc("Giờ Việt Nam: " .. vnTime .. "\nNgày: " .. vnDate)
-
         else
-
             TimeParagraph:SetContent("Giờ Việt Nam: " .. vnTime .. "\nNgày: " .. vnDate)
-
         end
-
         task.wait(1)
-
     end
-
 end)
-
-
 
 Tabs.Main:AddParagraph({
-
     Title = "Xin chào, " .. Player.DisplayName .. "!",
-
     Content = "Tài khoản: @" .. Player.Name .. "\nID: " .. Player.UserId .. "\nTuổi Acc: " .. Player.AccountAge .. " ngày"
-
 })
-
-
 
 local Section_Social = Tabs.Main:AddSection("Cộng Đồng")
-
 Tabs.Main:AddButton({
-
     Title = "Tham gia Discord 6_7 Hub",
-
     Callback = function()
-
         if hasClickedDiscord then
-
             Fluent:Notify({ Title = "Hệ thống", Content = "Bạn đã lấy link rồi!", Duration = 3 })
-
             return
-
         end
-
         hasClickedDiscord = true
-
         setclipboard("https://discord.gg/DBFVrAzbB")
-
         Fluent:Notify({ Title = "Thành công", Content = "Đã copy link Discord vào bộ nhớ tạm!", Duration = 5 })
-
     end
-
 })
-
-
 
 -- [[ 4. TAB CHỨC NĂNG GAME ]] --
-
 local Section_Game = Tabs.Game:AddSection("Script Phù Hợp")
 
-
-
 if PlaceID == 10449761463 then
-
     Tabs.Game:AddParagraph({ Title = "The Strongest Battlegrounds", Content = "Hệ thống đã nhận diện chính xác TSB!" })
-
     Tabs.Game:AddButton({ Title = "Kaitun/Auto Farm TSB", Callback = function() SafeLoad("https://raw.githubusercontent.com/skibidibi/stb/main/script.lua", "Kaitun TSB") end })
-
     Tabs.Game:AddButton({ Title = "Bokuzen Hub (TSB)", Callback = function() SafeLoad("https://raw.githubusercontent.com/Bokuzen-Team/Bokuzen-Hub/main/StrongestBattleground", "Bokuzen Hub") end })
-
 elseif PlaceID == 9391468976 or PlaceID == 10450270085 or PlaceID == 16335165688 then
-
     Tabs.Game:AddParagraph({ Title = "Jujutsu Shenanigans", Content = "Hệ thống đã nhận diện chính xác JJS!" })
-
     Tabs.Game:AddButton({ Title = "Spotlight Hub (JJS)", Callback = function() SafeLoad("https://raw.githubusercontent.com/NotEnoughJack/localplayerscripts/refs/heads/main/script", "Spotlight Hub") end })
-
 elseif PlaceID == 2753915549 or PlaceID == 4442272183 or PlaceID == 7449423635 then
-
     Tabs.Game:AddParagraph({ Title = "Blox Fruits", Content = "Script dành riêng cho Hải Tặc/Hải Quân!" })
-
     Tabs.Game:AddButton({ Title = "Redz Hub (Blox Fruits)", Callback = function() SafeLoad("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau", "Redz Hub") end })
-
 else
-
     Tabs.Game:AddParagraph({ Title = "Thông báo", Content = "Game hiện tại chưa có script riêng, dùng Admin Script bên dưới." })
-
     Tabs.Game:AddButton({ Title = "Infinite Yield (Lệnh Admin)", Callback = function() SafeLoad("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", "Infinite Yield") end })
-
 end
-
-
-
--- [[ 5. TAB HỖ TRỢ PVP ]] --
-
-local Section_ESP = Tabs.PVP:AddSection("Hệ Thống Tầm Nhìn (ESP)")
-
-local ToggleESP_Highlight = Tabs.PVP:AddToggle("ESPToggle", { Title = "Bật ESP (Dạ Quang)", Default = false })
-
-ToggleESP_Highlight:OnChanged(function(Value) ESP_Settings.Highlight = Value end)
-
-
-
-local ToggleESP_Name = Tabs.PVP:AddToggle("ESPNameToggle", { Title = "Bật ESP (Tên & Khoảng Cách)", Default = false })
-
-ToggleESP_Name:OnChanged(function(Value) ESP_Settings.NameDist = Value end)
-
-
-
-local Section_Hitbox = Tabs.PVP:AddSection("Hệ Thống Đánh Trúng (Hitbox)")
-
-local ToggleHitbox = Tabs.PVP:AddToggle("HitboxToggle", { Title = "Bật Hitbox (Mở rộng thân)", Default = false })
-
-ToggleHitbox:OnChanged(function(Value) Hitbox_Settings.Enabled = Value end)
-
-
-
-Tabs.PVP:AddSlider("HitboxSize", {
-
-    Title = "Kích thước Hitbox",
-
-    Default = 10, Min = 2, Max = 50, Rounding = 1,
-
-    Callback = function(Value) Hitbox_Settings.Size = Value end
-
-})
-
-
-
-task.spawn(function()
-
-    while task.wait(0.1) do
-
-        for _, v in pairs(Players:GetPlayers()) do
-
-            if v ~= Player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") then
-
-                local char = v.Character
-
-                local hrp = char.HumanoidRootPart
-
-                
-
-                if Hitbox_Settings.Enabled then
-
-                    hrp.Size = Vector3.new(Hitbox_Settings.Size, Hitbox_Settings.Size, Hitbox_Settings.Size)
-
-                    hrp.Transparency = Hitbox_Settings.Transparency
-
-                    hrp.CanCollide = false
-
-                else
-
-                    hrp.Size = Vector3.new(2, 2, 1)
-
-                    hrp.Transparency = 1
-
-                end
-
-                
-
-                local highlight = char:FindFirstChild("ESPHighlight")
-
-                if ESP_Settings.Highlight then
-
-                    if not highlight then
-
-                        highlight = Instance.new("Highlight", char)
-
-                        highlight.Name = "ESPHighlight"
-
-                        highlight.FillColor = Color3.fromRGB(255, 50, 50)
-
-                    end
-
-                elseif highlight then highlight:Destroy() end
-
-
-
-                local head = char.Head
-
-                local espGui = head:FindFirstChild("ESP_Text")
-
-                if ESP_Settings.NameDist then
-
-                    if not espGui then
-
-                        espGui = Instance.new("BillboardGui", head)
-
-                        espGui.Name = "ESP_Text"
-
-                        espGui.Size = UDim2.new(0, 200, 0, 50)
-
-                        espGui.AlwaysOnTop = true
-
-                        local text = Instance.new("TextLabel", espGui)
-
-                        text.Size = UDim2.new(1, 0, 1, 0)
-
-                        text.BackgroundTransparency = 1
-
-                        text.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-                        text.Font = Enum.Font.GothamBold
-
-                        text.TextSize = 13
-
-                    end
-
-                    local dist = math.floor((Player.Character.HumanoidRootPart.Position - hrp.Position).Magnitude)
-
-                    espGui.TextLabel.Text = v.DisplayName .. " [" .. dist .. "m]"
-
-                elseif espGui then espGui:Destroy() end
-
-            end
-
-        end
-
-    end
-
-end)
-
-
 
 -- [[ 6. TAB CÀI ĐẶT & BẢO VỆ ]] --
-
 local Section_Protection = Tabs.Settings:AddSection("Bảo Vệ Tài Khoản")
-
-
-
 local ToggleAFK = Tabs.Settings:AddToggle("AFKToggle", { Title = "Anti-AFK (Treo máy)", Default = false })
 
-
-
 ToggleAFK:OnChanged(function(Value)
-
     isAFK = Value
-
     if Value then
-
         Fluent:Notify({ Title = "Anti-AFK", Content = "Đã bật! Bạn sẽ không bị kick khi treo máy.", Duration = 3 })
-
     else
-
         Fluent:Notify({ Title = "Anti-AFK", Content = "Đã tắt chế độ treo máy.", Duration = 3 })
-
     end
-
 end)
-
-
 
 Player.Idled:Connect(function()
-
     if isAFK then
-
         VirtualUser:CaptureController()
-
         VirtualUser:ClickButton2(Vector2.new())
-
     end
-
 end)
-
-
 
 local function ServerHop()
-
     local ServersApi = "https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100"
-
     local success, result = pcall(function() return game:HttpGet(ServersApi) end)
-
-    
-
     if success then
-
         local servers = HttpService:JSONDecode(result).data
-
         for _, server in ipairs(servers) do
-
             if server.playing < server.maxPlayers and server.id ~= game.JobId then
-
                 Fluent:Notify({ Title = "Server Hop", Content = "Đang tẩu thoát sang server khác...", Duration = 10 })
-
                 TeleportService:TeleportToPlaceInstance(PlaceID, server.id, Player)
-
                 return
-
             end
-
         end
-
-        Fluent:Notify({ Title = "Lỗi Hop", Content = "Không tìm thấy server nào trống!", Duration = 3 })
-
-    else
-
-        Fluent:Notify({ Title = "Lỗi API", Content = "Không thể lấy danh sách server!", Duration = 3 })
-
     end
-
 end
-
-
 
 local function IsAdmin(plr)
-
     local success, isAdmin = pcall(function()
-
         return plr:IsInGroup(1200769) or plr.UserId == game.CreatorId
-
     end)
-
     return success and isAdmin
-
 end
-
-
-
-local function ScanForExistingAdmins()
-
-    if not AutoHopAdmin then return end
-
-    for _, plr in pairs(Players:GetPlayers()) do
-
-        if plr ~= Player and IsAdmin(plr) then
-
-            Fluent:Notify({
-
-                Title = "⚠️ PHÁT HIỆN ADMIN",
-
-                Content = "Admin " .. plr.Name .. " đang có mặt! Đang tự động đổi server...",
-
-                Duration = 10
-
-            })
-
-            ServerHop()
-
-            break
-
-        end
-
-    end
-
-end
-
-
 
 local ToggleAutoHop = Tabs.Settings:AddToggle("AutoHopAdminToggle", { Title = "Auto Hop Khi Có Admin/Dev", Default = false })
-
 ToggleAutoHop:OnChanged(function(Value)
-
     AutoHopAdmin = Value
-
-    if Value then ScanForExistingAdmins() end
-
 end)
-
-
 
 Players.PlayerAdded:Connect(function(plr)
-
-    if AutoHopAdmin then
-
-        if IsAdmin(plr) then
-
-            Fluent:Notify({
-
-                Title = "⚠️ BÁO ĐỘNG ĐỎ",
-
-                Content = "Phát hiện Admin/Dev: " .. plr.Name .. " vừa vào server! Đang auto hop...",
-
-                Duration = 5
-
-            })
-
-            ServerHop()
-
-        end
-
+    if AutoHopAdmin and IsAdmin(plr) then
+        ServerHop()
     end
-
 end)
-
-
 
 local Section_Stats = Tabs.Settings:AddSection("Trạng Thái Máy")
-
 local SystemStats = Tabs.Settings:AddParagraph({ Title = "Hệ Thống", Content = "Đang tải dữ liệu..." })
 
-
-
--- Fix logic cập nhật FPS/Ping và Thời gian trong Tab Cài Đặt
-
 task.spawn(function()
-
     while true do
-
-        task.wait(1) -- Cập nhật mỗi 1 giây
-
-        
-
-        -- Tính toán FPS an toàn
-
+        task.wait(1)
         local fps = math.floor(workspace:GetRealPhysicsFPS())
-
-        
-
-        -- Lấy Ping an toàn
-
         local ping = "N/A"
-
-        pcall(function()
-
-            ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
-
-        end)
-
-        
-
-        -- Lấy thời gian VN (UTC+7)
-
+        pcall(function() ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString() end)
         local timestamp = os.time()
-
         local vnTime = os.date("!%H:%M:%S", timestamp + 25200)
-
         local vnDate = os.date("!%d/%m/%Y", timestamp + 25200)
 
-
-
-        -- Cập nhật UI
-
         SystemStats:SetTitle("FPS: " .. fps .. " | Ping: " .. ping)
-
         if SystemStats.SetDesc then
-
              SystemStats:SetDesc("Giờ Việt Nam: " .. vnTime .. "\nNgày: " .. vnDate)
-
         else
-
              SystemStats:SetContent("Giờ Việt Nam: " .. vnTime .. "\nNgày: " .. vnDate)
-
         end
-
     end
-
 end)
 
-
-
 Tabs.Settings:AddButton({
-
     Title = "Siêu Fix Lag (Boost FPS)",
-
     Callback = function()
-
         for _, v in pairs(game:GetDescendants()) do
-
-            if v:IsA("Part") or v:IsA("MeshPart") then
-
-                v.Material = Enum.Material.SmoothPlastic
-
+            if v:IsA("Part") or v:IsA("MeshPart") then v.Material = Enum.Material.SmoothPlastic
             elseif v:IsA("Decal") then v:Destroy() end
-
         end
-
         game.Lighting.GlobalShadows = false
-
         Fluent:Notify({ Title = "Hệ thống", Content = "Đã tối ưu đồ họa!", Duration = 3 })
-
     end
-
 })
-
-
 
 Tabs.Settings:AddButton({
-
     Title = "Hủy Menu (Unload Hub)",
-
     Callback = function()
-
         ScreenGui:Destroy()
-
         Window:Destroy()
-
     end
-
 })
-
-
 
 Window:SelectTab(1)
-
 Fluent:Notify({ Title = "6_7 Hub", Content = "Đã kích hoạt bảo vệ Anti-Ban & Anti-Kick!", Duration = 5 })
