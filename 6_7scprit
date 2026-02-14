@@ -133,19 +133,21 @@ else
     })
 end
 
--- [[ 5. TAB CÀI ĐẶT (ĐÃ FIX LỖI ĐỔI MÀU) ]] --
+-- [[ 5. TAB CÀI ĐẶT ]] --
 Tabs.Settings = Window:AddTab({ Title = "Cài Đặt", Icon = "settings" })
 
-local Colorpicker = Tabs.Settings:AddColorpicker("ColorPicker", {
+-- FIX LỖI CHỈNH MÀU Ở ĐÂY
+local Colorpicker = Tabs.Settings:AddColorpicker("AccentColorPicker", {
     Title = "Chỉnh màu Menu",
     Default = Color3.fromRGB(167, 83, 245) -- Màu tím mặc định
 })
 
--- SỬA LỖI TẠI ĐÂY: Dùng SetAccentColor để cập nhật ngay lập tức
 Colorpicker:OnChanged(function()
+    -- Cập nhật trực tiếp vào hệ thống màu của Fluent
     Fluent:SetAccentColor(Colorpicker.Value)
 end)
 
+-- Nút Fix Lag
 Tabs.Settings:AddButton({
     Title = "Fix Lag (Siêu Mượt)",
     Description = "Tăng FPS tối đa",
@@ -159,6 +161,6 @@ Tabs.Settings:AddButton({
 Window:SelectTab(1)
 Fluent:Notify({
     Title = "6_7 Hub",
-    Content = "Đã fix lỗi chỉnh màu. Chúc bạn chơi vui vẻ!",
+    Content = "Đã fix lỗi màu sắc thành công!",
     Duration = 5
 })
